@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function simulator_question_install() {
+  // Add body field to simulator question node
+  quiz_question_add_body_field('simulator_question');
+
+  variable_set('node_options_simulator_question', array('status'));
+  cache_clear_all('autoload:', 'cache');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function simulator_question_uninstall() {
+  // Clear the cache.
+  cache_clear_all('variables', 'cache');
+  drupal_set_message(t('The Simulator Question module has been uninstalled and related data has been deleted.'));
+}
+
+/**
+ * Implements hook_schema().
+ */
+function simulator_question_schema() {
+  $schema['quiz_simulator_question_node_properties'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'metric' => array(
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+      'threshold' => array(
+        'type' => 'text',
+      ),
+      'required' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+    ),
+    'primary key' => array('nid', 'vid'),
+  );
+
+  // User answers go in here.
+  $schema['quiz_simulator_question_user_answers'] = array(
+    'fields' => array(
+      'answer_id' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'question_nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'question_vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'result_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'score' => array(
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'is_evaluated' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'size' => 'tiny',
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'answer' => array(
+        'type' => 'text'
+      ),
+      'answer_feedback' => array(
+        'type' => 'text'
+      ),
+      'answer_feedback_format' => array(
+        'type' => 'varchar',
+        'length' => 255,
+      ),
+      'simulator_response' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'default' => NULL,
+      )
+    ),
+    'primary key' => array('answer_id'),
+    'unique keys' => array(
+      'ids' => array('result_id', 'question_nid', 'question_vid'),
+    ),
+  );
+
+  return $schema;
+}
