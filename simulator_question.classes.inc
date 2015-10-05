@@ -171,6 +171,9 @@ class SimulatorResponse extends QuizQuestionResponse {
    * ID of the answer.
    */
   protected $answer_id = 0;
+  protected $is_correct = FALSE;
+  protected $evaluated = FALSE;
+  protected $answer = NULL;
 
   /**
    * Constructor
@@ -212,7 +215,7 @@ class SimulatorResponse extends QuizQuestionResponse {
   public function save() {
     $this->answer_id = db_insert('quiz_simulator_question_user_answers')
       ->fields(array(
-        'answer' => 0, 
+        'answer' => 0,
         'question_nid' => $this->question->nid,
         'question_vid' => $this->question->vid,
         'result_id' => $this->rid,
@@ -258,11 +261,11 @@ class SimulatorResponse extends QuizQuestionResponse {
     else {
       return $form;
     }
-    $form['answer'] = array('#markup' => check_markup($answer->answer));
+    //$form['answer'] = array('#markup' => check_markup($answer->answer));
     if ($answer->is_evaluated == 1) {
       // Show feedback, if any.
       if ($showfeedback && !empty($answer->feedback)) {
-        $feedback = check_markup($answer->feedback);
+        //$feedback = check_markup($answer->feedback);
       }
     }
     else {
@@ -270,22 +273,25 @@ class SimulatorResponse extends QuizQuestionResponse {
         '<br/>' .
         t('Until the answer is scored, the total score will not be correct.');
     }
-
     $form['metric'] = array(
       '#title' => t('Metric evaluated'),
+      '#title_display' => 'invisible',
       '#type' => 'item',
-      '#markup' => $this->question->node->metric,
+      '#markup' => t('Metric') . ': <span>' . $this->question->metric . '</span>',
     );
     $form['threshold'] = array(
       '#title' => t('Threshold used for evaluation'),
+      '#title_display' => 'invisible',
       '#type' => 'item',
-      '#markup' => $this->question->node->threshold,
+      '#markup' => t('Threshold used for evaluation') . ': <span>' . $this->question->threshold . '</span>',
     );
+/*
     $form['required'] = array(
       '#title' => t('Is this question required to pass'),
       '#type' => 'item',
-      '#markup' => $this->question->node->required,
+      '#markup' => $this->question->required,
     );
+*/
 
     if ($allow_scoring) {
 
@@ -313,6 +319,7 @@ class SimulatorResponse extends QuizQuestionResponse {
   }
 
   public function getReportFormAnswerFeedback($showpoints = TRUE, $showfeedback = TRUE, $allow_scoring = FALSE) {
+/*
     if (quiz_access_to_score() && $allow_scoring) {
       return array(
         '#title' => t('Feedback'),
@@ -323,6 +330,7 @@ class SimulatorResponse extends QuizQuestionResponse {
         '#attributes' => array('class' => array('quiz-report-score')),
       );
     }
+*/
     return FALSE;
   }
 
