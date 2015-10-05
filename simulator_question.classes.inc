@@ -171,6 +171,9 @@ class SimulatorResponse extends QuizQuestionResponse {
    * ID of the answer.
    */
   protected $answer_id = 0;
+  protected $is_correct = FALSE;
+  protected $evaluated = FALSE;
+  protected $answer = NULL;
 
   /**
    * Constructor
@@ -212,7 +215,7 @@ class SimulatorResponse extends QuizQuestionResponse {
   public function save() {
     $this->answer_id = db_insert('quiz_simulator_question_user_answers')
       ->fields(array(
-        'answer' => 0, 
+        'answer' => 0,
         'question_nid' => $this->question->nid,
         'question_vid' => $this->question->vid,
         'result_id' => $this->rid,
