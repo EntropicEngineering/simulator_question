@@ -297,6 +297,7 @@ function simulator_question_field_extra_fields() {
  */
 function simulator_question_metric_options() {
   $options = array(
+    /*
     'teeth' => t('Teeth - measured in newtons'),
     'tongue' => t('Tongue - measured in newtons'),
     'back_of_throat' => t('Back of the Throat - measured in newtons'),
@@ -309,6 +310,11 @@ function simulator_question_metric_options() {
     'incision_length' => t('Incision - length'),
     'incision_through' => t('Incision - through'),
     'elapsed_time' => t('Elapsed time - in seconds'),
+    */
+    'throat' => t('Throat'),
+    'trachea' => t('Trachea'),
+    'esophagus' => t('Esophagus'),
+    'vocal_chords' => t('Vocal chords'),
   );
 
   // Allow other modules to alter available options.
