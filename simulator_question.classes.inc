@@ -339,7 +339,7 @@ class SimulatorResponse extends QuizQuestionResponse {
    * Implementation of getReportFormSubmit
    */
   public function getReportFormSubmit($showfeedback = TRUE, $showpoints = TRUE, $allow_scoring = FALSE) {
-    return $allow_scoring ? 'simulator_question_report_submit' : FALSE;
+    // return $allow_scoring ? 'simulator_question_report_submit' : FALSE;
   }
 
   /**
