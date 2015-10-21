@@ -171,9 +171,17 @@ class SimulatorResponse extends QuizQuestionResponse {
    * ID of the answer.
    */
   protected $answer_id = 0;
-  protected $is_correct = FALSE;
+  protected $is_correct = TRUE;
   protected $evaluated = FALSE;
   protected $answer = NULL;
+  protected $rid = 0;
+
+  // The question node(not a quiz question instance)
+  public $question = NULL;
+
+  protected $score = 0;
+  public $is_skipped;
+  public $is_doubtful;
 
   /**
    * Constructor
@@ -255,6 +263,7 @@ class SimulatorResponse extends QuizQuestionResponse {
   public function getReportFormResponse($showpoints = TRUE, $showfeedback = TRUE, $allow_scoring = FALSE) {
     $form = array();
     $form['#theme'] = 'simulator_question_response_form';
+    /*
     if ($this->question && !empty($this->question->answers)) {
       $answer = (object) current($this->question->answers);
     }
@@ -273,6 +282,7 @@ class SimulatorResponse extends QuizQuestionResponse {
         '<br/>' .
         t('Until the answer is scored, the total score will not be correct.');
     }
+    */
     $form['metric'] = array(
       '#title' => t('Metric evaluated'),
       '#title_display' => 'invisible',
@@ -291,7 +301,6 @@ class SimulatorResponse extends QuizQuestionResponse {
       '#type' => 'item',
       '#markup' => $this->question->required,
     );
-*/
 
     if ($allow_scoring) {
 
@@ -306,52 +315,52 @@ class SimulatorResponse extends QuizQuestionResponse {
     if (!empty($feedback)) {
       $form['feedback'] = array('#markup' => '<span class="quiz_answer_feedback">' . $feedback . '</span>');
     }
+*/
     return $form;
   }
 
   /**
    * Implementation of getReportFormScore
-   */
   public function getReportFormScore($showfeedback = TRUE, $showpoints = TRUE, $allow_scoring = FALSE) {
     // The score will be shown as a questionmark if the question haven't been scored already
     $score = ($this->isEvaluated()) ? $this->getScore() : 0;
     return array('#markup' => $score);
   }
+   */
 
-  public function getReportFormAnswerFeedback($showpoints = TRUE, $showfeedback = TRUE, $allow_scoring = FALSE) {
-/*
-    if (quiz_access_to_score() && $allow_scoring) {
-      return array(
-        '#title' => t('Feedback'),
-        '#type' => 'textarea',
-        '#rows' => 2,
-        '#default_value' => isset($this->answer_feedback) ? check_markup($this->answer_feedback, $this->answer_feedback_format) : '',
-        '#format' => isset($this->answer_feedback_format) ? $this->answer_feedback_format : NULL,
-        '#attributes' => array('class' => array('quiz-report-score')),
-      );
-    }
-*/
+  /*
+    public function getReportFormAnswerFeedback($showpoints = TRUE, $showfeedback = TRUE, $allow_scoring = FALSE) {
+      if (quiz_access_to_score() && $allow_scoring) {
+        return array(
+          '#title' => t('Feedback'),
+          '#type' => 'textarea',
+          '#rows' => 2,
+          '#default_value' => isset($this->answer_feedback) ? check_markup($this->answer_feedback, $this->answer_feedback_format) : '',
+          '#format' => isset($this->answer_feedback_format) ? $this->answer_feedback_format : NULL,
+          '#attributes' => array('class' => array('quiz-report-score')),
+        );
+      }
     return FALSE;
   }
+  */
 
 
   /**
    * Implementation of getReportFormSubmit
-   */
   public function getReportFormSubmit($showfeedback = TRUE, $showpoints = TRUE, $allow_scoring = FALSE) {
-    // return $allow_scoring ? 'simulator_question_report_submit' : FALSE;
+    return $allow_scoring ? 'simulator_question_report_submit' : FALSE;
   }
+   */
 
   /**
    * Implementation of getReportFormValidate
-   */
   public function getReportFormValidate($showfeedback = TRUE, $showpoints = TRUE, $allow_scoring = FALSE) {
     //return $allow_scoring ? 'simulator_question_report_validate' : FALSE;
   }
+   */
 
   /**
    * Check to see if the answer is marked as correct.
-   */
   function getScore($weight_adjusted = TRUE) {
     if ($this->is_skipped) {
       return 0;
@@ -364,4 +373,5 @@ class SimulatorResponse extends QuizQuestionResponse {
     }
     return $this->score;
   }
+   */
 }

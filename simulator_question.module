@@ -107,8 +107,6 @@ function simulator_question_score_an_answer($values, $update_total = TRUE) {
     ->fields(array(
       'score' => !empty($calculated_score)?$calculated_score:0,
       'is_evaluated' => 1,
-      'answer_feedback' => isset($answer_feedback['value']) ? $answer_feedback['value'] : '', 
-      'answer_feedback_format' => $answer_feedback['format'],
     ))
     ->condition('question_nid', $nid)
     ->condition('question_vid', $vid)
@@ -315,6 +313,7 @@ function simulator_question_metric_options() {
     'trachea' => t('Trachea'),
     'esophagus' => t('Esophagus'),
     'vocal_chords' => t('Vocal chords'),
+    'time_limit' => t('Time limit for task'),
   );
 
   // Allow other modules to alter available options.
