@@ -157,23 +157,24 @@ function simulator_question_score_form_validate($form, $form_state) {
  * Submit handler for the simulator question score form
  */
 function simulator_question_score_form_submit($form, &$form_state) {
-  $result = db_query('SELECT nid, vid FROM {quiz_node_results} WHERE result_id = :result_id', array(':result_id' => $form_state['values']['result_id']))->fetch();
+  /*
+    $result = db_query('SELECT nid, vid FROM {quiz_node_results} WHERE result_id = :result_id', array(':result_id' => $form_state['values']['result_id']))->fetch();
+    $result = simulator_question_score_an_answer(array(
+      'quiz' => node_load($result->nid, $result->vid),
+      'nid' => $form_state['values']['question_nid'],
+      'vid' => $form_state['values']['question_vid'],
+      'rid' => $form_state['values']['result_id'],
+      'score' => $form_state['values']['score'],
+      'max_score' => $form_state['values']['rel_max_score'],
+      'answer_feedback' => $form_state['values']['answer_feedback']
+    ));
 
-  $result = simulator_question_score_an_answer(array(
-    'quiz' => node_load($result->nid, $result->vid),
-    'nid' => $form_state['values']['question_nid'],
-    'vid' => $form_state['values']['question_vid'],
-    'rid' => $form_state['values']['result_id'],
-    'score' => $form_state['values']['score'],
-    'max_score' => $form_state['values']['rel_max_score'],
-    'answer_feedback' => $form_state['values']['answer_feedback']
-  ));
-
-  if ($result == 1) {
-    drupal_set_message(t('The score has been saved.'));
-    $form_state['redirect'] = 'admin/quiz/reports/score-simulator question';
-  }
-  else {
-    drupal_set_message(t('Error saving the score. The selected answer was not scored.'), 'error');
-  }
+    if ($result == 1) {
+      drupal_set_message(t('The score has been saved.'));
+      $form_state['redirect'] = 'admin/quiz/reports/score-simulator question';
+    }
+    else {
+      drupal_set_message(t('Error saving the score. The selected answer was not scored.'), 'error');
+    }
+  */
 }
