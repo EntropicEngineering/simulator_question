@@ -1,0 +1,38 @@
+name: Orthobox
+hardware:   # Supported hardware IDs
+    - vendorID: 654321
+      deviceID: 2
+
+configuration:  # "description" field is displayed to instructor in LMS.
+    wall_error:
+        description:    "Duration of touch (in milliseconds) required to count as an error"
+        default:        250
+
+    sequence:
+        description:    "Sequence of sides the pegs must be placed"
+        default:
+            - Left
+            - Right
+            - Left
+
+metrics:    # "description" field is displayed to instructor in LMS.
+    collision_errors:
+        description:    "Collision with side walls"
+        values:
+            - unit:         count
+              threshold:    maximum
+              default:      0
+
+    drop_errors:
+        description:    "Peg drops"
+        values:
+            - unit:         count
+              threshold:    maximum
+              default:      0
+
+    timeout:
+        description:    "Elapsed time"
+        values:
+            - unit:         seconds
+              threshold:    maximum
+              default:      60

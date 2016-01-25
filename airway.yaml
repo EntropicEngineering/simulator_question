@@ -1,0 +1,66 @@
+hardware:   # Supported hardware IDs
+    - vendorID: 123456
+      deviceID: 41
+
+    - vendorID: 123456
+      deviceID: 42
+
+    - vendorID: 123456
+      deviceID: 43
+
+configuration:  # "description" field is displayed to instructor in LMS.
+    trachea:
+        description:    "Variance in ADC measurement; adjust with caution"
+        default:        200
+
+    throat:
+        description:    "Variance in ADC measurement; adjust with caution"
+        default:        200
+
+    vocal_chords:
+        description:    "Variance in ADC measurement; adjust with caution"
+        default:        200
+
+    esophagus:
+        description:    "Variance in ADC measurement; adjust with caution"
+        default:        200
+
+metrics:    # "description" field is displayed to instructor in LMS.
+    trachea:
+        description:   "Balloon pump count"
+        values:
+            - unit:         count
+              threshold:    minimum
+              default:      1
+
+            - unit:         count
+              threshold:    maximum
+              default:      3
+
+    throat:
+        description:    "Back of throat injury"
+        values:
+            - unit:         count
+              threshold:    maximum
+              default:      1 
+
+    vocal_chords:
+        description:    "Vocal chord injury"
+        values:
+            - unit:         count
+              threshold:    maximum
+              default:      0 
+
+    esophagus:
+        description:    "Esophageal insertion"
+        values:
+            - unit:         count
+              threshold:    maximum
+              default:      0 
+
+    timeout:
+        description:    "Elapsed time"
+        values:
+            - unit:         seconds
+              threshold:    maximum
+              default:      120
