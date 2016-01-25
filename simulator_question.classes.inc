@@ -7,16 +7,27 @@ class SimulatorQuestion extends QuizQuestion {
    * Implementation of saveNodeProperties
    */
   public function saveNodeProperties($is_new = FALSE) {
+    dpm($this);
     if (!isset($this->node->feedback)) {
       $this->node->feedback = '';
     }
+    $this->node->device_metrics = json_encode($this->node->device_metrics);
     if ($is_new || $this->node->revision == 1) {
       $id = db_insert('quiz_simulator_question_node_properties')
         ->fields(array(
           'nid' => $this->node->nid,
           'vid' => $this->node->vid,
+          /*
           'metric' => $this->node->metric,
           'threshold' => $this->node->threshold,
+          */
+          /*
+          'device_vid' => $this->node->device->vid,
+          'device_config' => $this->node->config,
+          */
+          'device_id' => $this->node->device_select,
+          'device_default' => json_encode($this->node->device),
+          'device_metrics' => $this->node->device_metrics,
           'required' => $this->node->required,
         ))
         ->execute();
@@ -24,8 +35,15 @@ class SimulatorQuestion extends QuizQuestion {
     else {
       db_update('quiz_simulator_question_node_properties')
         ->fields(array(
+          /*
           'metric' => $this->node->metric,
           'threshold' => $this->node->threshold,
+            'device_id' => $this->node->device->id,
+            'device_vid' => $this->node->device->vid,
+          'device_config' => $this->node->config,
+          */
+          'device_default' => json_encode($this->node->device),
+          'device_metrics' => $this->node->device_metrics,
           'required' => $this->node->required,
         ))
         ->condition('nid', $this->node->nid)
@@ -37,7 +55,8 @@ class SimulatorQuestion extends QuizQuestion {
   /**
    * Implementation of validateNode
    */
-  public function validateNode(array &$form) { }
+  public function validateNode(array &$form) {
+  }
 
   /**
    * Implementation of delete
@@ -73,12 +92,14 @@ class SimulatorQuestion extends QuizQuestion {
     }
     $props = parent::getNodeProperties();
 
-    $res_a = db_query('SELECT metric, threshold, required FROM {quiz_simulator_question_node_properties}
+    $res_a = db_query('SELECT device_id, device_vid, device_default, device_config, device_metrics, required FROM {quiz_simulator_question_node_properties}
       WHERE nid = :nid AND vid = :vid', array(':nid' => $this->node->nid, ':vid' => $this->node->vid))->fetchAssoc();
 
     if (is_array($res_a)) {
       $props = array_merge($props, $res_a);
     }
+    $props['device_default'] = json_decode($props['device_default']);
+    $props['device_metrics'] = json_decode($props['device_metrics']);
 
     $this->nodeProperties = $props;
     return $props;
@@ -120,6 +141,110 @@ class SimulatorQuestion extends QuizQuestion {
    * Implementation of getCreationForm
    */
   public function getCreationForm(array &$form_state = NULL) {
+
+    if (isset($form_state['node']) && $node = $form_state['node']) {
+      if (isset($node->device_default)) {
+        $device = $node->device_default;
+        $disabled = TRUE;
+      }
+      else {
+        $disabled = FALSE;
+      }
+    }
+
+    // If we have a pre-selected device, load it
+    if (isset($node->device_id)) {
+      $device = xlms_device_load($node->device_id);
+      simulator_question_load_device($device);
+    }
+
+    // Load all available devices
+    $devices = xlms_device_load_all();
+
+    // Build select list of devices for question creation page
+    $options = array(0 => t('Choose one'));
+    foreach ($devices as $d) {
+      $options[$d->did] = $d->label;
+    }
+
+    $form['device_select'] = array(
+      '#type' => 'select',
+      '#title' => t('Trainer'),
+      '#description' => $disabled ? NULL : t('Select an available trainer for this exercise'),
+      //'#options' => array(0 => 'Choose one', 'airway' => t('Airway'), 'orthobox' => t('Orthobox')),
+      '#options' => $options,
+      '#disabled' => $disabled,
+      '#ajax' => array(
+        'callback' => 'simulator_question_metrics_form_callback',
+        'wrapper' => 'device-div',
+        'method' => 'replace',
+        'effect' => 'fade',
+      ),
+      '#default_value' => isset($device->did) ? $device->did : 0,
+    );
+
+    $form['device_metrics'] = array(
+       '#type' => 'hidden',
+       '#title' => t('Metrics'),
+       '#collapisible' => FALSE,
+       '#collapsed' => FALSE,
+       '#tree' => TRUE,
+       '#prefix' => '<div id="device-div">',
+       '#suffix' => '</div>',
+    );
+    if (isset($device) || !empty($form_state['values']['device_select'])) {
+      $form['device_metrics']['#type'] = 'fieldset';
+
+      // Reset input for metrics during AJAX callback so default values can be set correctly.
+      unset($form_state['input']['device_metrics']);
+
+      if (!empty($form_state['values']['device_select'])) {
+        unset($device);
+        $device = $devices[$form_state['values']['device_select']];
+        simulator_question_load_device($device);
+        if ($node->device_default->name == $form_state['values']['device_select']) {
+          $metric_values = $node->device_metrics;
+          $configuration_values = $node->device_config;
+        }
+      }
+      elseif (is_object($device) && ($device->did == $node->device_default->did)) {
+        $metric_values = $node->device_metrics;
+        $configuration_values = $node->device_config;
+      }
+
+      $form_state['storage']['device'] = $device;
+
+      foreach ($device->info->metrics as $metric => $data) {
+        $form['device_metrics'][$metric] = array(
+          "#type" => 'fieldset',
+          "#title" => t($data->description),
+        );
+        foreach ($data->values as $value) {
+          $form['device_metrics'][$metric][$value->threshold] = array(
+            "#type" => 'textfield',
+            "#parent" => 'device_metrics',
+            "#title" => t($value->threshold),
+            "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}->{$value->threshold}: $value->default,
+          );
+        }
+      }
+      foreach ($device->info->configuration as $configuration => $data) {
+        $form['device_config'][$configuration] = array(
+          "#type" => 'fieldset',
+          "#title" => t($data->description),
+        );
+        foreach ($data->values as $value) {
+          $form['device_metrics'][$configuration][$value->threshold] = array(
+            "#type" => 'textfield',
+            "#parent" => 'device_metrics',
+            "#title" => t($value->threshold),
+            "#default_value" => (isset($configuration_values)) ? $configuration_values->{$metric}->{$value->threshold}: $value->default,
+          );
+        }
+      }
+    }
+
+    /*
     $form['metric'] = array(
       '#type' => 'select',
       '#title' => t('Metric'),
@@ -142,6 +267,9 @@ class SimulatorQuestion extends QuizQuestion {
       '#default_value' => isset($this->node->required) ? $this->node->required : '',
       '#required' => FALSE,
     );
+    */
+    // $form = simulator_question_metrics_form_callback($form, $form_state, $device);
+    $form['#tree'] = TRUE;
     return $form;
   }
 
@@ -154,8 +282,9 @@ class SimulatorQuestion extends QuizQuestion {
 
   public function getSimulationConfig() {
     $config = array();
-    $config['metric'] = $this->node->metric;
-    $config['threshold'] = $this->node->threshold;
+    $config['metric'] = $this->node->device_metrics;
+    //$config['config'] = $this->node->device_metric;
+    //$config['threshold'] = $this->node->threshold;
     // Probably need another parameter for how to evaluate threshold.
     return $config;
   }

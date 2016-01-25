@@ -36,6 +36,24 @@ function simulator_question_schema() {
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
+      'device_id' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'device_vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+      'device_default' => array(
+        'type' => 'text',
+      ),
+      'device_config' => array(
+        'type' => 'text',
+      ),
+      'device_metrics' => array(
+        'type' => 'text',
+      ),
+      /*
       'metric' => array(
         'type' => 'varchar',
         'length' => 255,
@@ -43,6 +61,7 @@ function simulator_question_schema() {
       'threshold' => array(
         'type' => 'text',
       ),
+      */
       'required' => array(
         'type' => 'int',
         'unsigned' => TRUE,

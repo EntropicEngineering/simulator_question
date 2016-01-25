@@ -38,6 +38,11 @@ function simulator_question_config_validate($form, $form_state) {
   }
 }
 
+function simulator_question_node_submit($node, $form, &$form_state) {
+  $node->device = $form_state['storage']['device'];
+  $node->title = $node->device->name;
+}
+
 /**
  * Implements hook_theme().
  */
@@ -232,20 +237,23 @@ function simulator_question_report_validate($values, $form_key) {
 function simulator_question_field_extra_fields() {
   $extra['node']['simulator_question'] = array(
     'form' => array(
-      'metric' => array(
+      /*
+      'device_metrics' => array(
         'label' => t('Metric'),
         'description' => t('Specify the criteria for grading the response'),
         'weight' => -4,
       ),
-      'threshold' => array(
+      */
+      'config' => array(
         'label' => t('Threshold'),
         'description' => t('Specify the threshold value used for evaluation within the simulator.'),
-        'weight' => -3,
+      ),
+      'device' => array(
+        'label' => t('Device'),
       ),
       'required' => array(
         'label' => t('Required to pass'),
         'description' => t('Failure to pass this question will fail the lesson.'),
-        'weight' => -2,
       )
     ),
   );
@@ -287,4 +295,35 @@ function simulator_question_metric_options() {
   drupal_alter('simulator_metric_options', $options);
 
   return $options;
+}
+
+/**
+ * Load device information from YAML, return PHP
+ * Metric form
+ * Configuration form
+ */
+
+function simulator_question_load_device(&$device) {
+  // Call function to retrieve YAML file for device
+  // $device->info = xlms_device_info_load($device);
+
+  if (!isset($device->info)) {
+    //$device->storage->yaml = __DIR__ . '/' . $device->name . '.yaml';
+    $configuration_file = file_load($device->configuration_file);
+    // Parse YAML
+    $device->info = json_decode(json_encode(yaml_parse_file(drupal_realpath($configuration_file->uri))));
+  }
+dpm($device); dpm($configuration_file);
+
+}
+
+function simulator_question_metrics_form_callback(&$form, &$form_state) {
+  return $form['device_metrics'];
+}
+
+function simulator_question_form_simulator_question_node_form_alter(&$form, &$form_state) {
+  $form['#tree'] = TRUE;
+  $form['title']['#type'] = 'hidden';
+  $form['body']['#type'] = 'hidden';
+  $form['body']['#value'] = "empty";
 }
