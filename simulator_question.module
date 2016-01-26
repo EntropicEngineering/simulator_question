@@ -313,12 +313,11 @@ function simulator_question_load_device(&$device) {
     // Parse YAML
     $device->info = json_decode(json_encode(yaml_parse_file(drupal_realpath($configuration_file->uri))));
   }
-dpm($device); dpm($configuration_file);
 
 }
 
 function simulator_question_metrics_form_callback(&$form, &$form_state) {
-  return $form['device_metrics'];
+  return $form;
 }
 
 function simulator_question_form_simulator_question_node_form_alter(&$form, &$form_state) {
@@ -326,4 +325,11 @@ function simulator_question_form_simulator_question_node_form_alter(&$form, &$fo
   $form['title']['#type'] = 'hidden';
   $form['body']['#type'] = 'hidden';
   $form['body']['#value'] = "empty";
+}
+
+function simulator_question_config_multi_value_callback(&$form, &$form_state, $option = NULL) {
+  $configuration = $form_state['triggering_element']['#name'];
+  $count = count($form_state['storage'][$configuration]);
+  $form_state['storage'][$configuration][$count] = '';
+  return $form['device_config'][$configuration];
 }
