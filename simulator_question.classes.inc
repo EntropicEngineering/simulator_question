@@ -205,18 +205,27 @@ class SimulatorQuestion extends QuizQuestion {
       }
 
       $form_state['storage']['device'] = $device;
-
       foreach ($device->info->metrics as $metric => $data) {
         $form['device_metrics'][$metric] = array(
           "#type" => 'fieldset',
           "#title" => t($data->description),
         );
-        foreach ($data->values as $value) {
-          $form['device_metrics'][$metric][$value->threshold] = array(
+        foreach ($data->values as $key => $data) {
+          $form['device_metrics'][$metric][$key]['unit'] = array(
+            "#type" => 'hidden',
+            '#name' => 'unit',
+            '#value' => $data->unit,
+          );
+          $form['device_metrics'][$metric][$key]['threshold'] = array(
+            "#type" => 'hidden',
+            '#name' => 'threshold',
+            '#value' => $data->threshold,
+          );
+          $form['device_metrics'][$metric][$key]['default'] = array(
             "#type" => 'textfield',
             "#parent" => 'device_metrics',
-            "#title" => t($value->threshold),
-            "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}->{$value->threshold}: $value->default,
+            "#title" => t($data->threshold),
+            "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}[$key]->default: $data->default,
           );
         }
       }
@@ -280,31 +289,6 @@ class SimulatorQuestion extends QuizQuestion {
       }
     }
 
-    /*
-    $form['metric'] = array(
-      '#type' => 'select',
-      '#title' => t('Metric'),
-      '#description' => t('Specify the criteria for grading the response.'),
-      '#default_value' => isset($this->node->metric) ? $this->node->metric : '',
-      '#required' => FALSE,
-      '#options' => simulator_question_metric_options(),
-    );
-    $form['threshold'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Threshold'),
-      '#description' => t('Specify the threshold value used for evaluation within the simulator.'),
-      '#default_value' => isset($this->node->threshold) ? $this->node->threshold : '',
-      '#required' => FALSE,
-    );
-    $form['required'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Required'),
-      '#description' => t('Failure to pass this question will fail the lesson.'),
-      '#default_value' => isset($this->node->required) ? $this->node->required : '',
-      '#required' => FALSE,
-    );
-    */
-    // $form = simulator_question_metrics_form_callback($form, $form_state, $device);
     $form['#tree'] = TRUE;
     return $form;
   }
