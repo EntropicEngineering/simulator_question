@@ -210,6 +210,7 @@ class SimulatorQuestion extends QuizQuestion {
           "#type" => 'fieldset',
           "#title" => t($data->description),
         );
+        /*
         foreach ($data->values as $key => $data) {
           $form['device_metrics'][$metric][$key]['unit'] = array(
             "#type" => 'hidden',
@@ -226,6 +227,15 @@ class SimulatorQuestion extends QuizQuestion {
             "#parent" => 'device_metrics',
             "#title" => t($data->threshold),
             "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}[$key]->default: $data->default,
+          );
+        }
+        */
+        foreach ($data->values as $value) {
+          $form['device_metrics'][$metric][$value->threshold] = array(
+            "#type" => 'textfield',
+            "#parent" => 'device_metrics',
+            "#title" => t($value->threshold),
+            "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}->{$value->threshold} : $value->default,
           );
         }
       }
