@@ -322,15 +322,16 @@ function simulator_question_metrics_form_callback(&$form, &$form_state) {
 function simulator_question_form_simulator_question_node_form_alter(&$form, &$form_state) {
   $form['#tree'] = TRUE;
   $form['title']['#type'] = 'hidden';
-  //$form['body']['#type'] = 'hidden';
- // $form['body']['#value'] = "empty";
+  unset($form['body']);
+  $form['body'] = array(
+    '#type' => 'hidden',
+    '#value' => 'not applicable',
+   );
 }
 
 function simulator_question_config_multi_value_callback(&$form, &$form_state, $option = NULL) {
-/*
   $configuration = $form_state['triggering_element']['#name'];
   $count = count($form_state['storage'][$configuration]);
   $form_state['storage'][$configuration][$count] = '';
-*/
   return $form['device_config'][$configuration];
 }
