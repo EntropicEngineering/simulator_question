@@ -202,14 +202,14 @@ class SimulatorQuestion extends QuizQuestion {
         $metric_values = $node->device_metrics;
         $configuration_values = $node->device_config;
       }
-$device->configuration();
-dpm($device);
+      $device->configuration();
 
       $form_state['storage']['device'] = $device;
       foreach ($device->info->metrics as $metric => $data) {
         $form['device_metrics'][$metric] = array(
           "#type" => 'fieldset',
           "#title" => t($data->description),
+          "#description" => t("Unit of measurement: " . $data->values[0]->unit),
         );
         foreach ($data->values as $value) {
           $form['device_metrics'][$metric][$value->threshold] = array(
