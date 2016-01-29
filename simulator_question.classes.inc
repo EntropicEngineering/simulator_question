@@ -183,7 +183,6 @@ class SimulatorQuestion extends QuizQuestion {
     $form['device_config'] = array(
       '#type' => 'hidden',
     );
-
     if (isset($device) || !empty($form_state['values']['device_select'])) {
       $form['device_metrics']['#type'] = 'fieldset';
 
@@ -203,6 +202,8 @@ class SimulatorQuestion extends QuizQuestion {
         $metric_values = $node->device_metrics;
         $configuration_values = $node->device_config;
       }
+$device->configuration();
+dpm($device);
 
       $form_state['storage']['device'] = $device;
       foreach ($device->info->metrics as $metric => $data) {
@@ -210,30 +211,10 @@ class SimulatorQuestion extends QuizQuestion {
           "#type" => 'fieldset',
           "#title" => t($data->description),
         );
-        /*
-        foreach ($data->values as $key => $data) {
-          $form['device_metrics'][$metric][$key]['unit'] = array(
-            "#type" => 'hidden',
-            '#name' => 'unit',
-            '#value' => $data->unit,
-          );
-          $form['device_metrics'][$metric][$key]['threshold'] = array(
-            "#type" => 'hidden',
-            '#name' => 'threshold',
-            '#value' => $data->threshold,
-          );
-          $form['device_metrics'][$metric][$key]['default'] = array(
-            "#type" => 'textfield',
-            "#parent" => 'device_metrics',
-            "#title" => t($data->threshold),
-            "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}[$key]->default: $data->default,
-          );
-        }
-        */
         foreach ($data->values as $value) {
           $form['device_metrics'][$metric][$value->threshold] = array(
             "#type" => 'textfield',
-            "#parent" => 'device_metrics',
+            //"#parent" => 'device_metrics',
             "#title" => t($value->threshold),
             "#default_value" => (isset($metric_values)) ? $metric_values->{$metric}->{$value->threshold} : $value->default,
           );
@@ -265,7 +246,7 @@ class SimulatorQuestion extends QuizQuestion {
               'wrapper' => drupal_clean_css_identifier($configuration),
               'method' => 'replace',
             ),
-            '#parents' => array('device_config'),
+            //'#parents' => array('device_config'),
           );
           if (empty($form_state['storage'][$configuration])) {
             if (empty($configuration_values)) {
@@ -299,7 +280,7 @@ class SimulatorQuestion extends QuizQuestion {
       }
     }
 
-    $form['#tree'] = TRUE;
+    //$form['#tree'] = TRUE;
     return $form;
   }
 
