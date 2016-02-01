@@ -158,7 +158,7 @@ class SimulatorQuestion extends QuizQuestion {
     $form['device_select'] = array(
       '#type' => 'select',
       '#title' => t('Trainer'),
-      '#description' => $disabled ? NULL : t('Select an available trainer for this exercise'),
+      '#description' => $disabled ? NULL : t('Select an available trainer for this exercise or ') . l(t('add another.'), 'admin/config/xlms/devices/add') ,
       //'#options' => array(0 => 'Choose one', 'airway' => t('Airway'), 'orthobox' => t('Orthobox')),
       '#options' => $options,
       '#disabled' => $disabled,
@@ -310,17 +310,19 @@ class SimulatorQuestion extends QuizQuestion {
     return variable_get('simulator_question_default_max_score', 10);
   }
 
-  public function getSimulationConfig() {
+  public function getSimulationConfig(&$session) {
     $config = array();
     $device = xlms_device_load($this->node->device_id);
     simulator_question_load_device($device);
-    $config['hardware'] = $device->info->hardware;
-    $config['metrics'] = $this->node->device_metrics;
-    $config['configuration'] = $this->node->device_config;
+    $session->name = $device->info->name;
+    $session->interface = $device->info->interface;
+    $session->hardware = $device->info->hardware;
+    $session->metrics = $this->node->device_metrics;
+    $session->configuration = $this->node->device_config;
     //$config['config'] = $this->node->device_metric;
     //$config['threshold'] = $this->node->threshold;
     // Probably need another parameter for how to evaluate threshold.
-    return $config;
+    //return $config;
   }
 
 }
