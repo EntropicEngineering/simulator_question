@@ -39,8 +39,10 @@ function simulator_question_config_validate($form, $form_state) {
 }
 
 function simulator_question_node_submit($node, $form, &$form_state) {
-  $node->device = $form_state['storage']['device'];
-  $node->title = $node->device->name;
+  if ($node->type == 'simulator_question') {
+    $node->device = $form_state['storage']['device'];
+    $node->title = $node->device->name;
+  }
 }
 
 /**
