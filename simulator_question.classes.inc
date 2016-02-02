@@ -292,18 +292,13 @@ class SimulatorQuestion extends QuizQuestion {
   }
 
   public function getSimulationConfig(&$session) {
-    $config = array();
     $device = xlms_device_load($this->node->device_id);
     simulator_question_load_device($device);
     $session->name = $device->info->name;
-    $session->interface = $device->info->interface;
+    $session->interface = $device->interfaceUri();
     $session->hardware = $device->info->hardware;
     $session->metrics = $this->node->device_metrics;
     $session->configuration = $this->node->device_config;
-    //$config['config'] = $this->node->device_metric;
-    //$config['threshold'] = $this->node->threshold;
-    // Probably need another parameter for how to evaluate threshold.
-    //return $config;
   }
 
 }
