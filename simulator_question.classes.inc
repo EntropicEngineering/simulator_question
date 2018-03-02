@@ -182,6 +182,7 @@ class SimulatorQuestion extends QuizQuestion {
     );
     $form['device_config'] = array(
       '#type' => 'hidden',
+      '#tree' => TRUE,
     );
     if (isset($device) || !empty($form_state['values']['device_select'])) {
       $form['device_metrics']['#type'] = 'fieldset';
@@ -203,7 +204,6 @@ class SimulatorQuestion extends QuizQuestion {
         $configuration_values = $node->device_config;
       }
       $device->configuration();
-
       $form_state['storage']['device'] = $device;
       foreach ($device->info->metrics as $metric => $data) {
         $form['device_metrics'][$metric] = array(
@@ -274,7 +274,7 @@ class SimulatorQuestion extends QuizQuestion {
           $form['device_config'][$configuration] = array(
             "#type" => 'textfield',
             "#title" => t($data->description),
-            "#default_value" => (isset($configuration_values)) ? $configuration_values->{$configuration} : $data->default,
+            "#default_value" => (isset($configuration_values)) ? $configuration_values[$configuration] : $data->default,
           );
         }
       }
@@ -294,6 +294,7 @@ class SimulatorQuestion extends QuizQuestion {
   public function getSimulationConfig(&$session) {
     $device = xlms_device_load($this->node->device_id);
     simulator_question_load_device($device);
+watchdog('sim', print_r(get_defined_vars(),1));
     $session->name = $device->info->name;
     $session->interface = $device->interfaceUri();
     $session->hardware = $device->info->hardware;
@@ -423,7 +424,6 @@ class SimulatorResponse extends QuizQuestionResponse {
         '<br/>' .
         t('Until the answer is scored, the total score will not be correct.');
     }
-    */
     $form['metric'] = array(
       '#title' => t('Metric evaluated'),
       '#title_display' => 'invisible',
@@ -436,7 +436,6 @@ class SimulatorResponse extends QuizQuestionResponse {
       '#type' => 'item',
       '#markup' => t('Threshold used for evaluation') . ': <span>' . $this->question->threshold . '</span>',
     );
-/*
     $form['required'] = array(
       '#title' => t('Is this question required to pass'),
       '#type' => 'item',

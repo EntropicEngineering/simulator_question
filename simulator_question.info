@@ -1,5 +1,5 @@
-name = Long Answer
-package = Quiz Question
+name = Simulator Question 
+package = XLMS
 description = This provides simulator question (essay, multi-paragraph) question types for use by the Quiz module.
 dependencies[] = quiz
 dependencies[] = quiz_question
@@ -7,10 +7,4 @@ core = 7.x
 
 files[] = simulator_question.classes.inc
 files[] = simulator_question.test
-
-; Information added by Drupal.org packaging script on 2015-06-23
-version = "7.x-4.0-rc1"
-core = "7.x"
-project = "quiz"
-datestamp = "1435086185"
 
